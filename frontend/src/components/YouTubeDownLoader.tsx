@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Download, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const YouTubeDownloader = () => {
+const YouTubeDownLoader = () => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [downloadLink, setDownloadLink] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setDownloadLink('');
 
     try {
-      const response = await fetch('/api/download', {
+      const response = await fetch('http://localhost:8000/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,14 +26,13 @@ const YouTubeDownloader = () => {
         body: JSON.stringify({ url }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to download video');
+        throw new Error('Failed to download video');
       }
 
+      const data = await response.json();
       setDownloadLink(data.downloadUrl);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
@@ -41,7 +40,7 @@ const YouTubeDownloader = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="container mx-auto p-4 flex justify-center items-center min-h-screen">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>YouTube Downloader</CardTitle>
@@ -51,16 +50,13 @@ const YouTubeDownloader = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="url"
-                placeholder="https://youtube.com/watch?v=..."
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                required
-                className="w-full"
-              />
-            </div>
+            <Input
+              type="url"
+              placeholder="https://youtube.com/watch?v=..."
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+            />
             
             <Button 
               type="submit" 
@@ -110,4 +106,4 @@ const YouTubeDownloader = () => {
   );
 };
 
-export default YouTubeDownloader;
+export default YouTubeDownLoader;
